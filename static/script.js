@@ -6,6 +6,7 @@ class ChatApp {
         this.sendButton = document.getElementById('sendButton');
         this.clearButton = document.getElementById('clearButton');
         this.messagesContainer = document.getElementById('messages');
+        this.conversationHistory = [];
 
         this.initEventListeners();
     }
@@ -32,6 +33,7 @@ class ChatApp {
         if (!message) return;
 
         this.addMessage(message, 'user');
+        this.conversationHistory.push({ role: 'user', content: message });
         this.messageInput.value = '';
         this.sendButton.disabled = true;
 
@@ -43,7 +45,10 @@ class ChatApp {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({
+                    message: message,
+                    conversation_history: this.conversationHistory.slice(0, -1)
+                })
             });
 
             const data = await response.json();
@@ -51,6 +56,7 @@ class ChatApp {
 
             if (response.ok && data.reply) {
                 this.addMessage(data.reply, 'ai');
+                this.conversationHistory.push({ role: 'assistant', content: data.reply });
             } else {
                 this.addMessage(
                     `Error: ${data.error || 'Unknown error occurred'}. Details: ${data.details || 'No details available'}`,
@@ -105,6 +111,7 @@ class ChatApp {
     }
 
     clearMessages() {
+        this.conversationHistory = [];
         this.messagesContainer.innerHTML = `
             <div class="message system-message">
                 Chat cleared. Start a new conversation!

@@ -1,15 +1,25 @@
 import requests
+from typing import List
 
 from config import settings
+from models.schemas import Message
 
 
 class AIService:
     def __init__(self):
         self.headers = {"Content-Type": "application/json"}
 
-    def get_chat_response(self, message: str) -> dict:
+    def get_chat_response(self, message: str, conversation_history: List[Message] = None) -> dict:
+        messages = []
+
+        if conversation_history:
+            for msg in conversation_history:
+                messages.append({"role": msg.role, "content": msg.content})
+
+        messages.append({"role": "user", "content": message})
+
         data = {
-            "messages": [{"role": "user", "content": message}],
+            "messages": messages,
             "model": settings.model_name,
             "max_tokens": settings.max_tokens,
             "temperature": settings.temperature,
