@@ -1,5 +1,6 @@
+from typing import List, Optional
+
 import requests
-from typing import List
 
 from config import settings
 from models.schemas import Message
@@ -9,7 +10,7 @@ class AIService:
     def __init__(self):
         self.headers = {"Content-Type": "application/json"}
 
-    def get_chat_response(self, message: str, conversation_history: List[Message] = None) -> dict:
+    def get_chat_response(self, message: str, conversation_history: Optional[List[Message]] = None) -> dict:
         messages = []
 
         if conversation_history:
