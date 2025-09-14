@@ -26,7 +26,6 @@ body {
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    /*height: calc(100vh - 40px);*/
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -96,6 +95,81 @@ body {
     font-size: 0.75rem;
     opacity: 0.7;
     text-align: right;
+}
+
+/* Think tag styling */
+think, [data-think] {
+    display: block;
+    margin: 10px 0;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+think::before {
+    content: "💭 AI Thinking";
+    display: block;
+    padding: 8px 12px;
+    background: #f3f4f6;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    user-select: none;
+}
+
+think::after {
+    content: "▶";
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    transition: transform 0.2s ease;
+}
+
+think {
+    position: relative;
+    max-height: 40px;
+    transition: max-height 0.3s ease;
+}
+
+think:hover::before {
+    background: #e5e7eb;
+}
+
+think:focus,
+think:active {
+    max-height: 300px;
+}
+
+think:focus::after,
+think:active::after {
+    transform: rotate(90deg);
+}
+
+think:focus,
+think:active {
+    outline: none;
+}
+
+/* Content inside think tag */
+think * {
+    padding: 0 12px 12px 12px;
+    margin: 0;
+    font-size: 0.875rem;
+    color: #4b5563;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.1s;
+}
+
+think:focus *,
+think:active * {
+    opacity: 1;
 }
 
 .typing-indicator {
