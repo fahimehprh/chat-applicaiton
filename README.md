@@ -9,20 +9,13 @@ A modern, stateful chat application built with FastAPI and vanilla JavaScript, f
 The easiest way to run the application is with Docker:
 
 ```bash
-# 1. Place your GGUF model file in the ./llama-models directory
-# Example: ./llama-models/llama-2-7b-chat.q4_0.gguf
-
-# 2. Create environment file (optional)
-cp .env.example .env
-# Edit .env to set MODEL_FILE=your-model-name.gguf
-
-# 3. Start everything with one command
+# Start everything with one command
 docker-compose up --build
 ```
 
 That's it! The application will be available at **http://localhost:8000**
 - **Chat Interface**: http://localhost:8000
-- **llama.cpp API**: http://localhost:8080
+- **LocalAI API**: http://localhost:1234
 
 ### Using Docker in Development Mode
 
@@ -41,13 +34,13 @@ docker-compose down
 
 ### Environment Variables
 
-You can customize the AI service configuration using environment variables:
+The application uses LocalAI with automatic model downloading. You can customize configuration using environment variables:
 
 ```bash
 # Create a .env file
 cat > .env << EOF
-API_URL=http://your-ai-service:1234/v1/chat/completions
-MODEL_NAME=your-preferred-model
+API_URL=http://127.0.0.1:1234/v1/chat/completions
+MODEL_NAME=qwen/qwen3-1.7b
 MAX_TOKENS=1000
 TEMPERATURE=0.7
 EOF
@@ -162,39 +155,29 @@ uv add package-name
 - Python 3.11 slim base image
 
 ### Docker Compose Features
+- **LocalAI Integration**: Automatic model downloading from Hugging Face
+- **Pre-configured Model**: Qwen3-1.7B-GGUF model loads automatically
 - Environment variable configuration
 - Volume mounts for development
-- Health checks
+- Health checks for both services
 - Automatic restart policies
-- Port mapping (8000:8000)
+- Port mapping: Chat App (8000:8000), LocalAI (1234:8080)
 
 ## 📝 Configuration
 
-### llama.cpp Configuration
-- `MODEL_FILE`: GGUF model filename in ./llama-models directory (default: model.gguf)
-- `CONTEXT_SIZE`: Context window size (default: 2048)
-- `THREADS`: Number of CPU threads to use (default: 4)
+### LocalAI Configuration
+- **Automatic Model Loading**: Qwen3-1.7B-Q8_0.gguf downloads automatically from Hugging Face
+- **Backend**: Uses llama-cpp for GGUF model inference
+- **API Endpoint**: Available at http://localhost:1234
+- **Model Storage**: Persistent volume for downloaded models
 
 ### Chat App Configuration
-- `API_URL`: AI service endpoint (default: http://llama-cpp:8080/v1/chat/completions)
-- `MODEL_NAME`: Model identifier for API (default: gpt-3.5-turbo)
+- `API_URL`: AI service endpoint (default: http://127.0.0.1:1234/v1/chat/completions)
+- `MODEL_NAME`: Model identifier (default: qwen/qwen3-1.7b)
 - `MAX_TOKENS`: Maximum response tokens (default: 1000)
 - `TEMPERATURE`: AI temperature setting (default: 0.7)
 
-### Model Requirements
-1. **Download a GGUF model** from Hugging Face or convert your own
-2. **Place it in `./llama-models/`** directory
-3. **Set `MODEL_FILE`** environment variable to the filename
-
-**Popular models:**
-- Llama 2 7B: `llama-2-7b-chat.q4_0.gguf` (~4GB)
-- Llama 2 13B: `llama-2-13b-chat.q4_0.gguf` (~7GB)
-- Code Llama: `codellama-7b-instruct.q4_0.gguf` (~4GB)
-
-## 🤝 Contributing
-
-1. Ensure Docker is installed and running
-2. Make your changes
-3. Test with: `docker-compose up --build`
-4. Run linters: `uv run ruff check . && uv run pyright .`
-5. Submit a pull request
+### Model Information
+- **Default Model**: Qwen3-1.7B-Q8_0.gguf (~1.9GB)
+- **Auto-download**: Model downloads automatically on first startup
+- **Storage**: Models persist in Docker volume for faster subsequent startups

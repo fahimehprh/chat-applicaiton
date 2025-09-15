@@ -24,6 +24,27 @@ services:
       retries: 3
       start_period: 40s
 
+  llm:
+    image: localai/localai:latest
+    container_name: localai
+    ports:
+      - "1234:8080"
+    environment:
+      - MODELS_PATH=/models
+      - PRELOAD_MODELS=[{"name":"my-gguf","url":"huggingface://Qwen/Qwen3-1.7B-GGUF/Qwen3-1.7B-Q8_0.gguf","overrides":{"backend":"llama-cpp","f16":false}}]
+    volumes:
+      - models:/models
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sf http://localhost:8080/readyz >/dev/null" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  models:
+
 networks:
   default:
     driver: bridge
